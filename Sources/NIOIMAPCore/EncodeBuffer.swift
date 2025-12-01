@@ -18,7 +18,7 @@ import struct NIO.CircularBuffer
 
 /// A buffer that handles encoding of Swift types into IMAP commands/responses that
 /// will be sent/recieved by clients and servers.
-@_spi(NIOIMAPInternal) public struct EncodeBuffer: Hashable, Sendable {
+public struct EncodeBuffer: Hashable, Sendable {
     /// Used to define if the buffer should act as a client or server.
     public enum Mode: Hashable, Sendable {
         /// Act as a client using the given `CommandEncodingOptions`.
@@ -33,8 +33,12 @@ import struct NIO.CircularBuffer
     internal var mode: Mode
     @usableFromInline internal var buffer: ByteBuffer
     @usableFromInline internal var stopPoints: CircularBuffer<Int> = []
+    
+    public func currentBuffer() -> ByteBuffer {
+        buffer
+    }
 
-    init(_ buffer: ByteBuffer, mode: Mode, loggingMode: Bool) {
+    public init(_ buffer: ByteBuffer, mode: Mode, loggingMode: Bool) {
         self.buffer = buffer
         self.mode = mode
         self.loggingMode = loggingMode
@@ -116,7 +120,7 @@ extension EncodeBuffer {
         public var waitForContinuation: Bool
     }
 
-    @_spi(NIOIMAPInternal) var hasChunks: Bool {
+    var hasChunks: Bool {
         self.stopPoints.count > 0
     }
 

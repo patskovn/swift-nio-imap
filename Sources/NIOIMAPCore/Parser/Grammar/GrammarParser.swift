@@ -43,21 +43,21 @@ public struct ExceededLiteralSizeLimitError: Error {
 import struct NIO.ByteBuffer
 import struct OrderedCollections.OrderedDictionary
 
-struct GrammarParser {
+public struct GrammarParser: Sendable {
     static let defaultParsedStringCache: @Sendable (String) -> String = { str in
         str
     }
 
-    var parsedStringCache: (String) -> String
+    var parsedStringCache: @Sendable (String) -> String
 
     let literalSizeLimit: Int
     let messageBodySizeLimit: Int
 
     /// - parameter parseCache
-    init(
+    public init(
         literalSizeLimit: Int = IMAPDefaults.literalSizeLimit,
         messageBodySizeLimit: Int = IMAPDefaults.bodySizeLimit,
-        parsedStringCache: ((String) -> String)? = nil
+        parsedStringCache: (@Sendable (String) -> String)? = nil
     ) {
         self.literalSizeLimit = literalSizeLimit
         self.messageBodySizeLimit = messageBodySizeLimit
@@ -3042,11 +3042,11 @@ extension GrammarParser {
     }
 }
 
-struct StackTracker {
+public struct StackTracker {
     private var stackDepth = 0
     private let maximumStackDepth: Int
 
-    static var makeNewDefault: StackTracker {
+    public static var makeNewDefault: StackTracker {
         StackTracker(maximumParserStackDepth: 100)
     }
 

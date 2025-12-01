@@ -47,7 +47,7 @@ extension GrammarParser {
     }
 
     // body            = "(" (body-type-1part / body-type-mpart) ")"
-    func parseBody(buffer: inout ParseBuffer, tracker: StackTracker) throws -> BodyStructure {
+    public func parseBody(buffer: inout ParseBuffer, tracker: StackTracker) throws -> BodyStructure {
         func parseBody_singlePart(buffer: inout ParseBuffer, tracker: StackTracker) throws -> BodyStructure {
             try PL.parseFixedString("(", buffer: &buffer, tracker: tracker)
             let part = try self.parseBodyKindSinglePart(buffer: &buffer, tracker: tracker)

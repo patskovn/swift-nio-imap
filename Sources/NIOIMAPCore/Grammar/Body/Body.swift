@@ -218,7 +218,7 @@ extension BodyStructure {
 // MARK: - Encoding
 
 extension EncodeBuffer {
-    @discardableResult mutating func writeBody(_ body: MessageAttribute.BodyStructure) -> Int {
+    @discardableResult public mutating func writeBody(_ body: MessageAttribute.BodyStructure) -> Int {
         switch body {
         case .valid(let wrapped):
             return self.writeBody(wrapped)
@@ -227,7 +227,7 @@ extension EncodeBuffer {
         }
     }
 
-    @discardableResult mutating func writeBody(_ body: BodyStructure) -> Int {
+    @discardableResult public mutating func writeBody(_ body: BodyStructure) -> Int {
         var size = 0
         size += self.writeString("(")
         switch body {

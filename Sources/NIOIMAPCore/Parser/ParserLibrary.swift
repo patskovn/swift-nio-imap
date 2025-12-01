@@ -23,10 +23,10 @@ struct IncompleteMessage: Error {
 
 typealias SubParser<T> = (inout ParseBuffer, StackTracker) throws -> T
 
-internal struct ParseBuffer: Hashable {
+public struct ParseBuffer: Hashable {
     fileprivate var bytes: ByteBuffer
 
-    internal init(_ bytes: ByteBuffer) {
+    public init(_ bytes: ByteBuffer) {
         self.bytes = bytes
     }
 

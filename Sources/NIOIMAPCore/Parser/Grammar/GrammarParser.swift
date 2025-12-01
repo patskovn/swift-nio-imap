@@ -66,12 +66,12 @@ import struct OrderedCollections.OrderedDictionary
 //
 // Note: The `parsedStringCache` is not (necessarily) sendable. We should fix this.
 //
-struct GrammarParser: @unchecked Sendable {
+public struct GrammarParser: @unchecked Sendable {
     static let defaultParsedStringCache: @Sendable (String) -> String = { str in
         str
     }
 
-    var parsedStringCache: (String) -> String
+    var parsedStringCache: @Sendable (String) -> String
 
     let literalSizeLimit: Int
     let messageBodySizeLimit: Int
@@ -84,10 +84,10 @@ struct GrammarParser: @unchecked Sendable {
     ///   - parsedStringCache: Optional string caching function for memory optimization. When provided,
     ///     every parsed string is passed through this function, which can return a cached version
     ///     to reduce memory usage for responses with repeated strings. Defaults to `nil`.
-    init(
+    public init(
         literalSizeLimit: Int = IMAPDefaults.literalSizeLimit,
         messageBodySizeLimit: Int = IMAPDefaults.bodySizeLimit,
-        parsedStringCache: ((String) -> String)? = nil
+        parsedStringCache: (@Sendable (String) -> String)? = nil
     ) {
         self.literalSizeLimit = literalSizeLimit
         self.messageBodySizeLimit = messageBodySizeLimit
@@ -3034,11 +3034,11 @@ extension GrammarParser {
     }
 }
 
-struct StackTracker {
+public struct StackTracker {
     private var stackDepth = 0
     private let maximumStackDepth: Int
 
-    static var makeNewDefault: StackTracker {
+    public static var makeNewDefault: StackTracker {
         StackTracker(maximumParserStackDepth: 100)
     }
 

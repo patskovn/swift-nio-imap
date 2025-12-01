@@ -40,7 +40,7 @@ import struct NIO.CircularBuffer
 /// continuation response is expected.
 ///
 /// - SeeAlso: ``CommandEncodeBuffer``, ``ResponseEncodeBuffer``
-@_spi(NIOIMAPInternal) public struct EncodeBuffer: Hashable, Sendable {
+public struct EncodeBuffer: Hashable, Sendable {
     /// Determines whether the buffer encodes for a client or server.
     ///
     /// Affects how the buffer formats protocol elements like literals, strings,
@@ -73,8 +73,12 @@ import struct NIO.CircularBuffer
     internal var mode: Mode
     @usableFromInline internal var buffer: ByteBuffer
     @usableFromInline internal var stopPoints: CircularBuffer<Int> = []
+    
+    public func currentBuffer() -> ByteBuffer {
+        buffer
+    }
 
-    init(_ buffer: ByteBuffer, mode: Mode, loggingMode: Bool) {
+    public init(_ buffer: ByteBuffer, mode: Mode, loggingMode: Bool) {
         self.buffer = buffer
         self.mode = mode
         self.loggingMode = loggingMode
@@ -172,7 +176,7 @@ extension EncodeBuffer {
         public var waitForContinuation: Bool
     }
 
-    @_spi(NIOIMAPInternal) var hasChunks: Bool {
+    var hasChunks: Bool {
         self.stopPoints.count > 0
     }
 

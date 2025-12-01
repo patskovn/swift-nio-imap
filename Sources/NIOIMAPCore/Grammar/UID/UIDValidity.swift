@@ -13,7 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 /// The unique identifier validity value of a mailbox. Combined with a message UID to form a 64-bit identifier.
-public struct UIDValidity: Hashable, Sendable {
+public struct UIDValidity: Hashable, Sendable, Codable {
     /// The underlying raw value.
     @usableFromInline
     let rawValue: UInt32

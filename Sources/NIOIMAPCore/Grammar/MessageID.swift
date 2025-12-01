@@ -18,7 +18,7 @@
 /// `<B27397-0100000@cac.washington.edu>`.
 ///
 /// See RFC 2822 section 3.6.4.
-public struct MessageID: Hashable, Sendable {
+public struct MessageID: Hashable, Sendable, Codable {
     /// The `String` message identifier.
     var rawValue: String
 

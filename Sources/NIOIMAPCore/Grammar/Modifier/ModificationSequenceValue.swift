@@ -15,7 +15,7 @@
 import struct NIO.ByteBuffer
 
 /// Represents the a *mod-sequence-value` as defined in RFC 7162.
-public struct ModificationSequenceValue: Hashable, Sendable {
+public struct ModificationSequenceValue: Hashable, Sendable, Codable {
     var value: UInt64
 
     /// A  zero *mod-sequence-value*

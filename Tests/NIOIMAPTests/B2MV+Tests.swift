@@ -456,4 +456,55 @@ extension B2MV_Tests {
             XCTFail("unhandled error: \(error)")
         }
     }
+    
+    
+    /// Tests that FETCH responses split across multiple buffer chunks are parsed correctly.
+    /// This reproduces a bug where the server sends data in multiple TCP packets that split
+    /// a FETCH response at an arbitrary point (e.g., before the closing parenthesis).
+    func testFetchResponseSplitAcrossChunks() throws {
+        // Split exactly as in the original bug report:
+        // Use EmbeddedChannel with IMAPClientHandler to properly test NIO buffering
+        let channel = EmbeddedChannel(handler: IMAPClientHandler())
+        channel.pipeline.fireChannelActive()
+        
+        try channel
+            .writeOutbound(
+                IMAPClientHandler.OutboundIn.part(
+                    CommandStreamPart.tagged(
+                        .init(
+                            tag: "450F6CB7-5BC4-44C5-8612-BFF5451B4882",
+                            command: .fetch(
+                                .range(
+                                    1...1000
+                                ),
+                                [.uid],
+                                []
+                            )
+                        )
+                    )
+                )
+            )
+        try channel
+            .writeInbound(
+                ByteBuffer(
+                    string: "* 1 FETCH (UID 138 MODSEQ (1142155))\n\n* 2 FETCH (UID 139 MODSEQ (1142159))\n450F6CB7-5BC4-44C5-8612-BFF5451B4882 OK Success\n"
+                )
+            )
+        
+        // Read all inbound responses
+        var responses: [Response] = []
+        while let response: Response = try channel.readInbound() {
+            responses.append(response)
+        }
+        
+        while let _: ByteBuffer = try channel.readOutbound() {
+            // Drain outbound
+            continue
+        }
+
+        XCTAssertEqual(responses.count, 9, "Expected 9 total responses, got \(responses.count)")
+        let leftover = try channel.finish()
+        XCTAssertTrue(leftover.isClean)
+    }
+    
 }

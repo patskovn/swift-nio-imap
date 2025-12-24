@@ -398,6 +398,28 @@ extension ParserLibrary {
         }
     }
 
+    /// Skips any leading empty lines (bare CRLF or LF sequences).
+    /// Some servers send extra newlines between responses.
+    static func skipExtraNewlines(buffer: inout ParseBuffer) {
+        while buffer.bytes.readableBytes > 0 {
+            // Check for CRLF
+            if let twoBytes = buffer.bytes.getInteger(at: buffer.bytes.readerIndex, as: UInt16.self),
+               twoBytes == UInt16(0x0D0A)
+            {
+                buffer.bytes.moveReaderIndex(forwardBy: 2)
+                continue
+            }
+            // Check for bare LF or CR
+            if let byte = buffer.bytes.getInteger(at: buffer.bytes.readerIndex, as: UInt8.self),
+               byte == UInt8(ascii: "\n") || byte == UInt8(ascii: "\r")
+            {
+                buffer.bytes.moveReaderIndex(forwardBy: 1)
+                continue
+            }
+            break
+        }
+    }
+
     static func parseNewline(buffer: inout ParseBuffer, tracker: StackTracker) throws {
         switch buffer.bytes.getInteger(at: buffer.bytes.readerIndex, as: UInt16.self) {
         case .some(UInt16(0x0D0A)):  // CRLF
